@@ -23,6 +23,18 @@ The two read tools are allowed by the included project permission policy. Create
 - A Jira Cloud API token associated with your own Atlassian account.
 - Node.js 20+ only if you want to run the included tests; OpenCode supplies the plugin runtime.
 
+## Create an Atlassian API token (all platforms)
+
+Create an API token through Atlassian account security. This is managed in your Atlassian account, not in a Jira project's settings.[1]
+
+1. Open the [Atlassian account API tokens page](https://id.atlassian.com/manage-profile/security/api-tokens) and sign in with the same Atlassian account/email you will put in `JIRA_EMAIL`.[1]
+2. Select **Create API token** (not **Create API token with scopes**) and give it a label such as `OpenCode Jira REST API`.[1]
+3. Choose an expiry that follows your company's policy. Atlassian's current UI allows 1–365 days and defaults to one year.[1]
+4. Create the token and copy it immediately; Atlassian shows the value only once.[1] Store it securely, then use it as `JIRA_API_TOKEN` in your separate `jira.env` file.
+
+**Token compatibility:** this version sends Basic authentication directly to `https://<site>.atlassian.net/rest/api/3`. It supports the regular token without scopes. Scoped tokens use Atlassian's API gateway URL with the Jira Cloud ID, which this version does not yet implement.[1][2] Atlassian recommends scoped tokens; if your company policy requires them or blocks unscoped tokens, do not bypass that policy—ask your Jira administrator for an approved OAuth or scoped-token implementation.
+
+
 ## Install and configure on Windows
 
 1. Clone this repository and open OpenCode in its folder. The checked-in `.opencode/plugins` directory contains the local plugin, and `opencode.jsonc` provides its permission rules.
@@ -49,7 +61,9 @@ The two read tools are allowed by the included project permission policy. Create
    JIRA_API_TOKEN=your-own-token
    ```
 
-   Create an API token through Atlassian account security. Do not paste it into chat, commit it, or share it with coworkers. The file is outside the repository at `%USERPROFILE%\.config\opencode\jira.env`.
+   See **Create an Atlassian API token (all platforms)** above for account/token setup.
+
+   Do not paste the token into chat, commit it, or share it with coworkers. The file is outside the repository at `%USERPROFILE%\.config\opencode\jira.env`.
 
 4. Restart OpenCode from the repository folder. Ask it to search a project, for example: “Find open issues in project EP2 related to CodeMeter.” The search tool always scopes the request to the supplied project key.
 
@@ -64,7 +78,7 @@ chmod 600 ~/.config/opencode/jira.env
 ${EDITOR:-vi} ~/.config/opencode/jira.env
 ```
 
-Fill in the three values shown above, then restart OpenCode.
+After creating your API token using the steps above, fill in the three values in `~/.config/opencode/jira.env` and restart OpenCode.
 
 ## Using it in another OpenCode project
 
@@ -113,4 +127,9 @@ They cover project-scoped JQL construction and literal escaping, control-charact
 - [OpenCode v2 plugin migration and custom tools](https://dev.opencode.ai/v2/docs/build/plugins/migrate-v1)
 - [OpenCode v2 permissions](https://dev.opencode.ai/v2/docs/permissions/)
 - [Jira Cloud REST API v3](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
-- [Atlassian basic authentication for REST APIs](https://developer.atlassian.com/cloud/jira/service-desk/basic-auth-for-rest-apis/)
+- [Atlassian basic authentication for REST APIs](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/)
+
+## Sources
+
+[1] https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account — Manage API tokens for your Atlassian account
+[2] https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis — Basic authentication for REST APIs
