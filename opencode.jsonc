@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permissions": [
+    { "action": "jira_search", "resource": "*", "effect": "allow" },
+    { "action": "jira_get_issue", "resource": "*", "effect": "allow" },
+    { "action": "jira_create_issue", "resource": "*", "effect": "ask" },
+    { "action": "jira_update_issue", "resource": "*", "effect": "ask" },
+    { "action": "jira_link_issues", "resource": "*", "effect": "ask" }
+  ]
+}
