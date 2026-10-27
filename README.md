@@ -2,7 +2,7 @@
 
 A small OpenCode v2 plugin that connects to Jira Cloud through Atlassian's REST API. It adds scoped search and issue read/write tools to OpenCode without an MCP server.
 
-The plugin is designed for internal use by employees. Each person configures their own Jira site, email address and API token locally. This repository contains no Jira credentials and never reads Hermes configuration or `.env` files.
+The plugin is designed for internal use by employees. Each person configures their own Jira site, email address and API token locally. This repository contains no Jira credentials and never reads `.env` files.
 
 ## What it can do
 
