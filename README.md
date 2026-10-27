@@ -86,7 +86,7 @@ The simplest setup is to copy the plugin directory into that project's `.opencod
 
 For a global installation, copy `.opencode/plugins/opencode-jira-rest-api/` into OpenCode's global `plugins/` directory (normally `%USERPROFILE%\.config\opencode\plugins\` on Windows or `~/.config/opencode/plugins/` on macOS/Linux). Merge the permission rules into the global `opencode.jsonc`; do not replace an existing config wholesale. The separate `jira.env` file remains at `~/.config/opencode/jira.env`.
 
-The plugin reads credentials from that dedicated OpenCode config file; process environment variables with the same names take precedence. It does not open or read Hermes files.
+The plugin reads credentials from that dedicated OpenCode config file; process environment variables with the same names take precedence.
 
 ## How it works
 
@@ -96,11 +96,11 @@ The plugin reads credentials from that dedicated OpenCode config file; process e
 4. The API token is sent as HTTP Basic authentication over HTTPS. It is not returned in tool output. Error handling intentionally omits Jira response bodies to avoid echoing issue data into logs.
 5. Jira enforces the configured user's own project and issue permissions. Search queries are always constrained to a project, and descriptions sent to Jira are converted to Atlassian Document Format.
 
-This does not use an Atlassian MCP server, does not read Hermes files, and does not run `curl` or shell commands to access Jira.
+This does not use an Atlassian MCP server or run `curl` or shell commands to access Jira.
 
 ## Credentials and security
 
-- Configure a separate credential for OpenCode; this plugin never reads `%LOCALAPPDATA%\hermes\.env` or any other Hermes file.
+- Configure Jira credentials separately for OpenCode; keep them in the user's private profile or inject them through environment variables, never in the repository.
 - Each employee should use their own Atlassian account and API token. Never put a shared token in the repository or send it to employees.
 - `jira.env` is plaintext on disk. Keep it in the user's private profile, do not sync it to a shared folder, and use an approved secret manager to inject environment variables if company policy requires one.
 - Issue content returned by Jira is supplied to the active OpenCode model. Use the integration only where company data-handling rules allow it.
