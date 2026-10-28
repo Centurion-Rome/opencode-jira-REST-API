@@ -37,16 +37,12 @@ Create an API token through Atlassian account security. This is managed in your 
 
 ## Install and configure on Windows
 
-1. Clone this repository and open OpenCode in its folder. The checked-in `.opencode/plugins` directory contains the local plugin, and `opencode.jsonc` provides its permission rules.
-
-   ```powershell
-   git clone git@github.com:Centurion-Rome/opencode-jira-REST-API.git
-   Set-Location .\opencode-jira-REST-API
-   ```
+1. Open OpenCode in the directory that contains this plugin. Its `.opencode/plugins` folder holds the local plugin, and `opencode.jsonc` provides its permission rules.
 
 2. Create the separate, per-user OpenCode config file from the example:
 
    ```powershell
+   # run from the plugin directory
    $config = Join-Path $HOME ".config\opencode"
    New-Item -ItemType Directory -Force $config | Out-Null
    Copy-Item .\jira.env.example (Join-Path $config "jira.env")
@@ -65,11 +61,11 @@ Create an API token through Atlassian account security. This is managed in your 
 
    Do not paste the token into chat, commit it, or share it with coworkers. The file is outside the repository at `%USERPROFILE%\.config\opencode\jira.env`.
 
-4. Restart OpenCode from the repository folder. Ask it to search a project, for example: “Find open issues in project EP2 related to CodeMeter.” The search tool always scopes the request to the supplied project key.
+4. Restart OpenCode from that folder. Ask it to search a project, for example: “Find open issues in project EP2 related to CodeMeter.” The search tool always scopes the request to the supplied project key.
 
 ## macOS and Linux
 
-Clone the repository, open OpenCode in its root, then create the same separate configuration file:
+Open OpenCode in the directory that contains this plugin, then create the same separate configuration file (run from that directory):
 
 ```sh
 mkdir -p ~/.config/opencode
