@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import test from "node:test";
 import { createJiraClient } from "../.opencode/plugins/opencode-jira-rest-api/jira-rest.mjs";
 
@@ -45,7 +46,7 @@ test("search text and status are quoted so JQL syntax cannot escape the project 
   assert.equal(request.searchParams.get("jql"), `project = EP2 AND text ~ ${JSON.stringify(text)} AND status = ${JSON.stringify(status)} ORDER BY updated DESC`);
 });
 
-test("reads credentials from a separate OpenCode config file", async () => {
+test("reads credentials from an explicitly supplied config file", async () => {
   const directory = await mkdtemp(join(tmpdir(), "opencode-jira-"));
   const configPath = join(directory, "jira.env");
   try {
@@ -57,6 +58,29 @@ test("reads credentials from a separate OpenCode config file", async () => {
     } });
     await jira.search({ projectKey: "UNI" });
     assert.equal(authorization, `Basic ${Buffer.from("employee@example.com:separate-token").toString("base64")}`);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("defaults to .env beside the plugin regardless of cwd; environment takes precedence", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "opencode-jira-"));
+  try {
+    const modulePath = join(directory, "jira-rest.mjs");
+    await copyFile(new URL("../.opencode/plugins/opencode-jira-rest-api/jira-rest.mjs", import.meta.url), modulePath);
+    await writeFile(join(directory, ".env"), "JIRA_BASE_URL=https://employee.atlassian.net\nJIRA_EMAIL=employee@example.com\nJIRA_API_TOKEN=local-token\n", "utf8");
+    assert.notEqual(process.cwd(), directory);
+    const { createJiraClient: createLocalClient } = await import(pathToFileURL(modulePath).href);
+    for (const overrides of [{}, { JIRA_API_TOKEN: "environment-token" }]) {
+      let request;
+      const jira = createLocalClient({ env: overrides, fetchImpl: async (url, options) => {
+        request = { url: new URL(url), options };
+        return jsonResponse({ issues: [], isLast: true });
+      } });
+      await jira.search({ projectKey: "UNI" });
+      assert.equal(request.url.origin, "https://employee.atlassian.net");
+      assert.equal(request.options.headers.Authorization, `Basic ${Buffer.from(`employee@example.com:${overrides.JIRA_API_TOKEN ?? "local-token"}`).toString("base64")}`);
+    }
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

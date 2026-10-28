@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const DEFAULT_CONFIG = join(homedir(), ".config", "opencode", "jira.env");
+const DEFAULT_CONFIG = fileURLToPath(new URL(".env", import.meta.url));
 
 function parseEnv(text) {
   const values = {};
